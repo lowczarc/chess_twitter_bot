@@ -1,4 +1,4 @@
-use chess::{Board, BoardStatus, ChessMove, Color, File, Piece, Rank, Square};
+use chess::{Board, MoveGen, Color, File, Piece, Rank, Square};
 
 fn print_board(board: Board) {
     for i in 0..8 {
@@ -20,11 +20,10 @@ fn print_board(board: Board) {
 
 fn main() {
     let mut board = Board::default();
-    let mut moves: [ChessMove; 256] = [ChessMove::default(); 256];
 
-    for _ in 0..200 {
-        let size = board.enumerate_moves(&mut moves);
-        board = board.make_move_new(moves[0]);
+    println!("{}", env!("CARGO_MANIFEST_DIR"));
+    for mov in 0..2 {
+        board = board.make_move_new(MoveGen::new_legal(&board).next().unwrap());
         print_board(board);
         println!("\n");
     }

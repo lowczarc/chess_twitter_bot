@@ -3,6 +3,7 @@ name = "chess_twitter_bot"
 version = "0.1.0"
 authors = ["Lancelot OWCZARCZAK <lowczarc@student.42.fr>"]
 edition = "2018"
+build = "build.rs"
 
 [dependencies]
 chess = "3.0.1"
