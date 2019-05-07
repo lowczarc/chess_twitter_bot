@@ -1,4 +1,20 @@
-use chess::{Board, MoveGen, Color, File, Piece, Rank, Square};
+use std::process::{Command, Stdio};
+
+use chess::{Board, Color, File, Game, MoveGen, Rank, Square};
+
+fn get_all_moves(game: Game) -> String {
+    return game
+        .actions()
+        .iter()
+        .map(|elem| {
+            if let chess::Action::MakeMove(mve) = elem {
+                return mve.to_string();
+            }
+            "".to_string()
+        })
+        .collect::<Vec<String>>()
+        .join(" ");
+}
 
 fn print_board(board: Board) {
     for i in 0..8 {
@@ -19,12 +35,19 @@ fn print_board(board: Board) {
 }
 
 fn main() {
-    let mut board = Board::default();
+    let mut game = Game::new();
+    let mut engine = Command::new(concat!(env!("CARGO_MANIFEST_DIR"), "/engine/stockfish"))
+        .stdout(Stdio::piped())
+        .stdin(Stdio::piped())
+        .spawn()
+        .expect("Stockfish failed to launch");
 
-    println!("{}", env!("CARGO_MANIFEST_DIR"));
-    for mov in 0..2 {
-        board = board.make_move_new(MoveGen::new_legal(&board).next().unwrap());
-        print_board(board);
+    for _ in 0..5 {
+        game.make_move(MoveGen::new_legal(&game.current_position()).next().unwrap());
+        print_board(game.current_position());
         println!("\n");
     }
+    let moves = get_all_moves(game);
+    println!("{}", moves);
+    engine.kill().expect("Stockfish failed to shutdown");
 }
