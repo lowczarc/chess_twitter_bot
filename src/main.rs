@@ -1,7 +1,9 @@
+mod board_image;
 mod chess_engine;
 
 use std::process::{Command, Stdio};
 
+use board_image::*;
 use chess::{BoardStatus, Game};
 use chess_engine::*;
 
@@ -12,6 +14,7 @@ fn main() {
         .stdin(Stdio::piped())
         .spawn()
         .expect("Stockfish failed to launch");
+    let assets = construct_assets();
 
     loop {
         if game.current_position().status() == BoardStatus::Checkmate {
@@ -21,6 +24,7 @@ fn main() {
             .expect("Stockfish exited unexpectedly");
         game.make_move(stockfish_move);
         print_board(game.current_position());
+        create_image(&assets, game.current_position());
         println!("\n");
     }
 

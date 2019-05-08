@@ -8,3 +8,4 @@ build = "build.rs"
 [dependencies]
 chess = "3.0.1"
 rust_twitter_bot_lib = { git = "https://github.com/lowczarc/rust_twitter_bot_lib" }
+image = "0.21.1"
