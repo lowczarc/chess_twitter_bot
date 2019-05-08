@@ -5,7 +5,7 @@ use std::{
 
 use chess::{Board, ChessMove, Color, File, Game, Piece, Rank, Square};
 
-const MOVE_TIME: u32 = 500;
+const MOVE_TIME: u32 = 15000;
 
 fn str_to_chess_move(chess_move: &str) -> ChessMove {
     let src = Square::from_string(chess_move[..2].to_owned()).expect("not a valid square");

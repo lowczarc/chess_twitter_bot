@@ -118,7 +118,7 @@ fn copy_image_into_another(dest: &mut ImageBuff8, src: &ImageBuff8, x: u32, y: u
     }
 }
 
-pub fn create_image(assets: &HashMap<AssetKey, ImageBuff8>, board: Board) {
+pub fn create_image(assets: &HashMap<AssetKey, ImageBuff8>, board: Board, name: &str) {
     let mut board_image = assets.get(&AssetKey::Board).unwrap().clone();
 
     for i in 0..8 {
@@ -135,5 +135,5 @@ pub fn create_image(assets: &HashMap<AssetKey, ImageBuff8>, board: Board) {
             }
         }
     }
-    DynamicImage::ImageRgba8(board_image).save("test.png");
+    DynamicImage::ImageRgba8(board_image).save(name);
 }
