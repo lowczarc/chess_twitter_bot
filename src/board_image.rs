@@ -135,5 +135,7 @@ pub fn create_image(assets: &HashMap<AssetKey, ImageBuff8>, board: Board, name: 
             }
         }
     }
-    DynamicImage::ImageRgba8(board_image).save(name);
+    DynamicImage::ImageRgba8(board_image)
+        .save(name)
+        .expect("Failed to save image");
 }

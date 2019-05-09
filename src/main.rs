@@ -1,20 +1,20 @@
 mod board_image;
 mod chess_engine;
+mod twitter_move;
 
 use std::{
     fs::File,
     io::{stdin, Read, Write},
-    path::Path,
     process::{Command, Stdio},
-    time::Duration,
 };
 
 use chess::{BoardStatus, Game};
-use rust_twitter_bot_lib::{tweet_structure::QueryOption, TwitterBot};
+use rust_twitter_bot_lib::TwitterBot;
 use toml;
 
 use board_image::*;
 use chess_engine::*;
+use twitter_move::*;
 
 fn config_twitter_bot() -> TwitterBot {
     let mut file_content = String::new();
@@ -59,7 +59,8 @@ fn main() {
         if game.current_position().status() == BoardStatus::Checkmate {
             break;
         }
-        let mut next_move;
+        get_twitter_move(&game, &twitter_bot);
+        let next_move;
         loop {
             let mut player_move_str = String::new();
             stdin()
@@ -75,19 +76,6 @@ fn main() {
         game.make_move(next_move);
         print_board(game.current_position());
         create_image(&assets, game.current_position(), "chess_board.png");
-
-        /*
-         * twitter_bot
-            .tweet(
-                "Stockfish vs Stockfish #Stockfish #Chess #TwitterBot #Rust",
-                Some(
-                    twitter_bot
-                        .upload_file(Path::new("chess_board.png"))
-                        .unwrap(),
-                ),
-            )
-            .unwrap();
-        */
     }
     println!("Checkmate");
 
