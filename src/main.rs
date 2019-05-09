@@ -3,7 +3,7 @@ mod chess_engine;
 
 use std::{
     fs::File,
-    io::Read,
+    io::{stdin, Read, Write},
     path::Path,
     process::{Command, Stdio},
     time::Duration,
@@ -34,6 +34,14 @@ fn main() {
         .stdin(Stdio::piped())
         .spawn()
         .expect("Stockfish failed to launch");
+    let sstdin = engine
+        .stdin
+        .as_mut()
+        .expect("Failed to open stockfish stdin");
+    sstdin
+        .write_all("setoption name Skill Level value 1".as_bytes())
+        .expect("Failed to write to stdin");
+
     let assets = construct_assets();
     let twitter_bot = config_twitter_bot();
 
@@ -43,11 +51,33 @@ fn main() {
         }
         let stockfish_move = stockfish_move(&mut engine, get_all_moves(&game))
             .expect("Stockfish exited unexpectedly");
+        println!("Stockfish move: {}", stockfish_move);
         game.make_move(stockfish_move);
         print_board(game.current_position());
         create_image(&assets, game.current_position(), "chess_board.png");
 
-        twitter_bot
+        if game.current_position().status() == BoardStatus::Checkmate {
+            break;
+        }
+        let mut next_move;
+        loop {
+            let mut player_move_str = String::new();
+            stdin()
+                .read_line(&mut player_move_str)
+                .expect("stdin read failed");
+            let player_move = str_to_chess_move(&player_move_str);
+            if player_move.is_some() && game.current_position().legal(player_move.unwrap()) {
+                next_move = player_move.unwrap();
+                break;
+            }
+            println!("Invalid move");
+        }
+        game.make_move(next_move);
+        print_board(game.current_position());
+        create_image(&assets, game.current_position(), "chess_board.png");
+
+        /*
+         * twitter_bot
             .tweet(
                 "Stockfish vs Stockfish #Stockfish #Chess #TwitterBot #Rust",
                 Some(
@@ -57,7 +87,9 @@ fn main() {
                 ),
             )
             .unwrap();
+        */
     }
+    println!("Checkmate");
 
     engine.kill().expect("Stockfish failed to shutdown");
 }

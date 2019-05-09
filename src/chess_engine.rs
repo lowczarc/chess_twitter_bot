@@ -5,11 +5,20 @@ use std::{
 
 use chess::{Board, ChessMove, Color, File, Game, Piece, Rank, Square};
 
-const MOVE_TIME: u32 = 15000;
+const MOVE_TIME: u32 = 0;
 
-fn str_to_chess_move(chess_move: &str) -> ChessMove {
-    let src = Square::from_string(chess_move[..2].to_owned()).expect("not a valid square");
-    let dest = Square::from_string(chess_move[2..4].to_owned()).expect("not a valid square");
+pub fn str_to_chess_move(chess_move: &str) -> Option<ChessMove> {
+    let src = if let Some(src) = Square::from_string(chess_move[..2].to_string()) {
+        src
+    } else {
+        return None;
+    };
+    let dest = if let Some(dest) = Square::from_string(chess_move[2..4].to_string()) {
+        dest
+    } else {
+        return None;
+    };
+
     let promotion: Option<Piece> = match chess_move.chars().nth(4) {
         Some('q') => Some(Piece::Queen),
         Some('b') => Some(Piece::Bishop),
@@ -18,7 +27,7 @@ fn str_to_chess_move(chess_move: &str) -> ChessMove {
         _ => None,
     };
 
-    ChessMove::new(src, dest, promotion)
+    Some(ChessMove::new(src, dest, promotion))
 }
 
 pub fn stockfish_move(stockfish: &mut Child, all_moves: String) -> Result<ChessMove, ()> {
@@ -49,7 +58,7 @@ pub fn stockfish_move(stockfish: &mut Child, all_moves: String) -> Result<ChessM
                 if words[1] == "(none)" {
                     return Err(());
                 }
-                return Ok(str_to_chess_move(words[1]));
+                return Ok(str_to_chess_move(words[1]).expect("Error in stockfish response"));
             }
         }
     }
