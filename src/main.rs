@@ -45,6 +45,8 @@ fn main() {
     let assets = construct_assets();
     let twitter_bot = config_twitter_bot();
 
+    let mut last_tweet: Option<i64> = None;
+
     loop {
         if game.current_position().status() == BoardStatus::Checkmate {
             break;
@@ -59,7 +61,7 @@ fn main() {
         if game.current_position().status() == BoardStatus::Checkmate {
             break;
         }
-        get_twitter_move(&game, &twitter_bot);
+        last_tweet = Some(get_twitter_move(&game, &twitter_bot, last_tweet));
         let next_move;
         loop {
             let mut player_move_str = String::new();
