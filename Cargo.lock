@@ -1110,7 +1110,7 @@ dependencies = [
 [[package]]
 name = "rust_twitter_bot_lib"
 version = "0.1.0"
-source = "git+https://github.com/lowczarc/rust_twitter_bot_lib#bee2f11be20251da4d93f4afda73f452f3ff920a"
+source = "git+https://github.com/lowczarc/rust_twitter_bot_lib#ba84f0fde2fd8d5f59734f81c0489059d2c65db9"
 dependencies = [
  "oauthcli 2.0.0-beta-2 (git+https://github.com/lowczarc/rust-oauthcli)",
  "reqwest 0.9.16 (registry+https://github.com/rust-lang/crates.io-index)",

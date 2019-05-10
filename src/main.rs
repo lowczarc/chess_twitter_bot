@@ -51,16 +51,7 @@ fn main() {
         if game.current_position().status() == BoardStatus::Checkmate {
             break;
         }
-        let stockfish_move = stockfish_move(&mut engine, get_all_moves(&game))
-            .expect("Stockfish exited unexpectedly");
-        println!("Stockfish move: {}", stockfish_move);
-        game.make_move(stockfish_move);
-        print_board(game.current_position());
         create_image(&assets, game.current_position(), "chess_board.png");
-
-        if game.current_position().status() == BoardStatus::Checkmate {
-            break;
-        }
         last_tweet = Some(get_twitter_move(&game, &twitter_bot, last_tweet));
         let next_move;
         loop {
@@ -77,7 +68,15 @@ fn main() {
         }
         game.make_move(next_move);
         print_board(game.current_position());
-        create_image(&assets, game.current_position(), "chess_board.png");
+
+        if game.current_position().status() == BoardStatus::Checkmate {
+            break;
+        }
+        let stockfish_move = stockfish_move(&mut engine, get_all_moves(&game))
+            .expect("Stockfish exited unexpectedly");
+        println!("Stockfish move: {}", stockfish_move);
+        game.make_move(stockfish_move);
+        print_board(game.current_position());
     }
     println!("Checkmate");
 
