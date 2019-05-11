@@ -39,7 +39,7 @@ fn main() {
         .as_mut()
         .expect("Failed to open stockfish stdin");
     sstdin
-        .write_all("setoption name Skill Level value 1".as_bytes())
+        .write_all("setoption name Skill Level value 1\n".as_bytes())
         .expect("Failed to write to stdin");
 
     let assets = construct_assets();

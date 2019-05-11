@@ -1,10 +1,28 @@
 use std::{collections::HashMap, path::Path, thread::sleep, time::Duration};
 
-use chess::{Action, Game};
+use chess::{Action, ChessMove, Game};
 use rust_twitter_bot_lib::{tweet_structure::Tweet, TwitterBot};
+
+use crate::chess_engine::str_to_chess_move;
 
 const TIME_BETWEEN_CHECK: u64 = 15;
 const MINIMUM_COMMENTS_NUM: usize = 1;
+
+pub fn get_vote_from_comment(tweet_content: &str) -> Option<ChessMove> {
+    let words: Vec<&str> = tweet_content
+        .split(" ")
+        .filter(|elem| {
+            elem.chars().nth(0).is_some()
+                && elem.chars().nth(0) != Some('@')
+                && elem.chars().nth(0) != Some('#')
+        })
+        .collect();
+
+    if words.len() == 1 {
+        return str_to_chess_move(words[0]);
+    }
+    None
+}
 
 pub fn get_twitter_move(game: &Game, twitter_bot: &TwitterBot, reply_to: Option<i64>) -> i64 {
     let actions = game.actions();
@@ -52,7 +70,7 @@ pub fn get_twitter_move(game: &Game, twitter_bot: &TwitterBot, reply_to: Option<
         .unwrap();
 
     let mut since_id = tweet.id().to_string();
-    let mut responses: Vec<Tweet> = Vec::new();
+    let mut responses: HashMap<String, ChessMove> = HashMap::new();
 
     while responses.len() < MINIMUM_COMMENTS_NUM {
         sleep(Duration::from_secs(TIME_BETWEEN_CHECK));
@@ -67,10 +85,16 @@ pub fn get_twitter_move(game: &Game, twitter_bot: &TwitterBot, reply_to: Option<
             .into_iter()
             .filter(|elem| elem.reply_to() == Some(tweet.id()))
             .collect();
+
         if new_responses.get(0).is_some() {
             since_id = new_responses.get(0).unwrap().id().to_string();
         }
-        responses.append(&mut new_responses);
+
+        for response in new_responses.iter() {
+            if let Some(chess_move) = get_vote_from_comment(response.content()) {
+                responses.insert(response.user().name().to_string(), chess_move);
+            }
+        }
     }
 
     println!("{:?}", responses);
