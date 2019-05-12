@@ -131,7 +131,6 @@ pub fn create_image(assets: &HashMap<AssetKey, ImageBuff8>, board: Board, name: 
                     56 + 114 * j as u32,
                     56 + 114 * i as u32,
                 );
-            } else {
             }
         }
     }
