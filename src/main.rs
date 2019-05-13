@@ -52,8 +52,8 @@ fn main() {
             break;
         }
         create_image(&assets, game.current_position(), "chess_board.png");
-        last_tweet = Some(get_twitter_move(&game, &twitter_bot, last_tweet));
-        let next_move;
+        last_tweet = Some(get_twitter_move(&mut game, &twitter_bot, last_tweet));
+        /*let next_move;
         loop {
             let mut player_move_str = String::new();
             stdin()
@@ -67,6 +67,7 @@ fn main() {
             println!("Invalid move");
         }
         game.make_move(next_move);
+        */
         print_board(game.current_position());
 
         if game.current_position().status() == BoardStatus::Checkmate {

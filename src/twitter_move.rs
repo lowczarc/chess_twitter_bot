@@ -1,6 +1,6 @@
 use std::{collections::HashMap, path::Path, thread::sleep, time::Duration};
 
-use chess::{Action, ChessMove, Game};
+use chess::{Action, ChessMove, Game, MoveGen};
 use rust_twitter_bot_lib::{tweet_structure::Tweet, TwitterBot};
 
 use crate::chess_engine::str_to_chess_move;
@@ -24,7 +24,7 @@ pub fn get_vote_from_comment(tweet_content: &str) -> Option<ChessMove> {
     None
 }
 
-pub fn get_twitter_move(game: &Game, twitter_bot: &TwitterBot, reply_to: Option<i64>) -> i64 {
+pub fn get_twitter_move(game: &mut Game, twitter_bot: &TwitterBot, reply_to: Option<i64>) -> i64 {
     let actions = game.actions();
     let mut params: HashMap<&str, &str> = HashMap::new();
 
@@ -97,7 +97,31 @@ pub fn get_twitter_move(game: &Game, twitter_bot: &TwitterBot, reply_to: Option<
         }
     }
 
-    println!("{:?}", responses);
+    let mut possibles_moves: HashMap<ChessMove, i32> = HashMap::new();
+
+    for legal_move in MoveGen::new_legal(&game.current_position()) {
+        possibles_moves.insert(legal_move, 0);
+    }
+
+    for response in responses.values() {
+        if let Some(legal_move) = possibles_moves.get(response) {
+            possibles_moves.insert(*response, legal_move + 1);
+        }
+    }
+
+    let mut higher_move: (ChessMove, i32) = (ChessMove::default(), -1);
+
+    for (chess_move, count) in possibles_moves.iter() {
+        if higher_move.1 < *count {
+            higher_move = (*chess_move, *count);
+        }
+    }
+
+    println!(
+        "Chosen move: {} with {} votes",
+        higher_move.0, higher_move.1
+    );
+    game.make_move(higher_move.0);
 
     tweet.id()
 }
