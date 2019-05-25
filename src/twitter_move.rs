@@ -6,7 +6,7 @@ use rust_twitter_bot_lib::{tweet_structure::Tweet, TwitterBot};
 use crate::chess_engine::str_to_chess_move;
 
 const TIME_BETWEEN_CHECK: u64 = 15;
-const MINIMUM_COMMENTS_NUM: usize = 1;
+const MINIMUM_COMMENTS_NUM: usize = 5;
 
 pub fn get_vote_from_comment(tweet_content: &str) -> Option<ChessMove> {
     let words: Vec<&str> = tweet_content
@@ -79,7 +79,7 @@ pub fn get_twitter_move(game: &mut Game, twitter_bot: &TwitterBot, reply_to: Opt
         params.insert("result_type", "recent");
         params.insert("since_id", &since_id);
 
-        let mut new_responses: Vec<Tweet> = twitter_bot
+        let new_responses: Vec<Tweet> = twitter_bot
             .get_tweets_query(&format!("to:ZezezBot #MyPlanToBeatStockfish"), Some(params))
             .unwrap()
             .into_iter()
@@ -104,7 +104,7 @@ pub fn get_twitter_move(game: &mut Game, twitter_bot: &TwitterBot, reply_to: Opt
     }
 
     for response in responses.values() {
-        if let Some(legal_move) = possibles_moves.get(response) {
+        if let Some(&legal_move) = possibles_moves.get(response) {
             possibles_moves.insert(*response, legal_move + 1);
         }
     }

@@ -4,7 +4,7 @@ mod twitter_move;
 
 use std::{
     fs::File,
-    io::{stdin, Read, Write},
+    io::{Read, Write},
     process::{Command, Stdio},
 };
 
