@@ -42,7 +42,6 @@ fn main() {
         .write_all("setoption name Skill Level value 1\n".as_bytes())
         .expect("Failed to write to stdin");
 
-    let assets = construct_assets();
     let twitter_bot = config_twitter_bot();
 
     let mut last_tweet: Option<i64> = None;
@@ -51,23 +50,8 @@ fn main() {
         if game.current_position().status() == BoardStatus::Checkmate {
             break;
         }
-        create_image(&assets, game.current_position(), "chess_board.png");
+        create_image(game.current_position(), "chess_board.png");
         last_tweet = Some(get_twitter_move(&mut game, &twitter_bot, last_tweet));
-        /*let next_move;
-        loop {
-            let mut player_move_str = String::new();
-            stdin()
-                .read_line(&mut player_move_str)
-                .expect("stdin read failed");
-            let player_move = str_to_chess_move(&player_move_str);
-            if player_move.is_some() && game.current_position().legal(player_move.unwrap()) {
-                next_move = player_move.unwrap();
-                break;
-            }
-            println!("Invalid move");
-        }
-        game.make_move(next_move);
-        */
         print_board(game.current_position());
 
         if game.current_position().status() == BoardStatus::Checkmate {

@@ -1,4 +1,5 @@
 use std::{collections::HashMap, path::Path};
+use lazy_static::lazy_static;
 
 use chess::{Board, Color, File, Piece, Rank, Square};
 use image::{self, DynamicImage, ImageBuffer, Rgba};
@@ -11,89 +12,91 @@ pub enum AssetKey {
     Piece((Color, Piece)),
 }
 
-pub fn construct_assets() -> HashMap<AssetKey, ImageBuff8> {
-    let mut assets = HashMap::new();
+lazy_static! {
+    static ref ASSETS: HashMap<AssetKey, ImageBuff8> = {
+        let mut assets = HashMap::new();
 
-    assets.insert(
-        AssetKey::Board,
-        image::open(Path::new("assets/chess_board.png"))
-            .unwrap()
-            .to_rgba(),
-    );
-    assets.insert(
-        AssetKey::Piece((Color::Black, Piece::King)),
-        image::open(Path::new("assets/black_king.png"))
-            .unwrap()
-            .to_rgba(),
-    );
-    assets.insert(
-        AssetKey::Piece((Color::Black, Piece::Queen)),
-        image::open(Path::new("assets/black_queen.png"))
-            .unwrap()
-            .to_rgba(),
-    );
-    assets.insert(
-        AssetKey::Piece((Color::Black, Piece::Bishop)),
-        image::open(Path::new("assets/black_bishop.png"))
-            .unwrap()
-            .to_rgba(),
-    );
-    assets.insert(
-        AssetKey::Piece((Color::Black, Piece::Knight)),
-        image::open(Path::new("assets/black_knight.png"))
-            .unwrap()
-            .to_rgba(),
-    );
-    assets.insert(
-        AssetKey::Piece((Color::Black, Piece::Rook)),
-        image::open(Path::new("assets/black_rook.png"))
-            .unwrap()
-            .to_rgba(),
-    );
-    assets.insert(
-        AssetKey::Piece((Color::Black, Piece::Pawn)),
-        image::open(Path::new("assets/black_pawn.png"))
-            .unwrap()
-            .to_rgba(),
-    );
-    assets.insert(
-        AssetKey::Piece((Color::White, Piece::King)),
-        image::open(Path::new("assets/white_king.png"))
-            .unwrap()
-            .to_rgba(),
-    );
-    assets.insert(
-        AssetKey::Piece((Color::White, Piece::Queen)),
-        image::open(Path::new("assets/white_queen.png"))
-            .unwrap()
-            .to_rgba(),
-    );
-    assets.insert(
-        AssetKey::Piece((Color::White, Piece::Bishop)),
-        image::open(Path::new("assets/white_bishop.png"))
-            .unwrap()
-            .to_rgba(),
-    );
-    assets.insert(
-        AssetKey::Piece((Color::White, Piece::Knight)),
-        image::open(Path::new("assets/white_knight.png"))
-            .unwrap()
-            .to_rgba(),
-    );
-    assets.insert(
-        AssetKey::Piece((Color::White, Piece::Rook)),
-        image::open(Path::new("assets/white_rook.png"))
-            .unwrap()
-            .to_rgba(),
-    );
-    assets.insert(
-        AssetKey::Piece((Color::White, Piece::Pawn)),
-        image::open(Path::new("assets/white_pawn.png"))
-            .unwrap()
-            .to_rgba(),
-    );
+        assets.insert(
+            AssetKey::Board,
+            image::open(Path::new("assets/chess_board.png"))
+                .unwrap()
+                .to_rgba(),
+        );
+        assets.insert(
+            AssetKey::Piece((Color::Black, Piece::King)),
+            image::open(Path::new("assets/black_king.png"))
+                .unwrap()
+                .to_rgba(),
+        );
+        assets.insert(
+            AssetKey::Piece((Color::Black, Piece::Queen)),
+            image::open(Path::new("assets/black_queen.png"))
+                .unwrap()
+                .to_rgba(),
+        );
+        assets.insert(
+            AssetKey::Piece((Color::Black, Piece::Bishop)),
+            image::open(Path::new("assets/black_bishop.png"))
+                .unwrap()
+                .to_rgba(),
+        );
+        assets.insert(
+            AssetKey::Piece((Color::Black, Piece::Knight)),
+            image::open(Path::new("assets/black_knight.png"))
+                .unwrap()
+                .to_rgba(),
+        );
+        assets.insert(
+            AssetKey::Piece((Color::Black, Piece::Rook)),
+            image::open(Path::new("assets/black_rook.png"))
+                .unwrap()
+                .to_rgba(),
+        );
+        assets.insert(
+            AssetKey::Piece((Color::Black, Piece::Pawn)),
+            image::open(Path::new("assets/black_pawn.png"))
+                .unwrap()
+                .to_rgba(),
+        );
+        assets.insert(
+            AssetKey::Piece((Color::White, Piece::King)),
+            image::open(Path::new("assets/white_king.png"))
+                .unwrap()
+                .to_rgba(),
+        );
+        assets.insert(
+            AssetKey::Piece((Color::White, Piece::Queen)),
+            image::open(Path::new("assets/white_queen.png"))
+                .unwrap()
+                .to_rgba(),
+        );
+        assets.insert(
+            AssetKey::Piece((Color::White, Piece::Bishop)),
+            image::open(Path::new("assets/white_bishop.png"))
+                .unwrap()
+                .to_rgba(),
+        );
+        assets.insert(
+            AssetKey::Piece((Color::White, Piece::Knight)),
+            image::open(Path::new("assets/white_knight.png"))
+                .unwrap()
+                .to_rgba(),
+        );
+        assets.insert(
+            AssetKey::Piece((Color::White, Piece::Rook)),
+            image::open(Path::new("assets/white_rook.png"))
+                .unwrap()
+                .to_rgba(),
+        );
+        assets.insert(
+            AssetKey::Piece((Color::White, Piece::Pawn)),
+            image::open(Path::new("assets/white_pawn.png"))
+                .unwrap()
+                .to_rgba(),
+        );
 
-    assets
+        assets
+    };
 }
 
 fn copy_image_into_another(dest: &mut ImageBuff8, src: &ImageBuff8, x: u32, y: u32) {
@@ -118,8 +121,8 @@ fn copy_image_into_another(dest: &mut ImageBuff8, src: &ImageBuff8, x: u32, y: u
     }
 }
 
-pub fn create_image(assets: &HashMap<AssetKey, ImageBuff8>, board: Board, name: &str) {
-    let mut board_image = assets.get(&AssetKey::Board).unwrap().clone();
+pub fn create_image(board: Board, name: &str) {
+    let mut board_image = ASSETS.get(&AssetKey::Board).unwrap().clone();
 
     for i in 0..8 {
         for j in 0..8 {
@@ -127,7 +130,7 @@ pub fn create_image(assets: &HashMap<AssetKey, ImageBuff8>, board: Board, name: 
             if let (Some(piece), Some(color)) = (board.piece_on(square), board.color_on(square)) {
                 copy_image_into_another(
                     &mut board_image,
-                    assets.get(&AssetKey::Piece((color, piece))).unwrap(),
+                    ASSETS.get(&AssetKey::Piece((color, piece))).unwrap(),
                     56 + 114 * j as u32,
                     56 + 114 * i as u32,
                 );
