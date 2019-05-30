@@ -1,5 +1,5 @@
-use std::{collections::HashMap, path::Path};
 use lazy_static::lazy_static;
+use std::{collections::HashMap, path::Path};
 
 use chess::{Board, Color, File, Piece, Rank, Square};
 use image::{self, DynamicImage, ImageBuffer, Rgba};

@@ -1,5 +1,5 @@
-use std::process::Command;
 use std::fs;
+use std::process::Command;
 
 const REPOSITORY: &str = "https://github.com/official-stockfish/Stockfish.git";
 const STOCKFISH_DIR: &str = "target/stockfish";
